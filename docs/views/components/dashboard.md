@@ -4,7 +4,6 @@
 
 ## Example
 
-Compact
 ```html
 <w-dashboard></w-dashboard>
 ```

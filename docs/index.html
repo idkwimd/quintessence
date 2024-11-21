@@ -11,9 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
-  <link rel="stylesheet" href="./custom/style.css">
-  <script src="./custom/script.js" defer></script>
-  <script src="../index.js" type="module"></script>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./assets/script.js" defer></script>
+  <script src="./assets/quintessence.bundle.js"></script>
 </head>
 <body>
   <div id="app"></div>
@@ -22,8 +22,9 @@
       name: 'Quintessence',
       repo: '',
       loadSidebar: 'sidebar.md',
-      subMaxLevel: 2,
-      noCompileLinks: ['/pages/.*', '/custom/.*'],
+      homepage: 'index.md',
+      basePath: '/views/',
+      noCompileLinks: ['/html/.*', '/assets/.*'],
       tabs: {
         theme: 'material'
       },
@@ -39,7 +40,7 @@
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-themeable@0"></script>
   <!-- Plugins -->
-  <script src="https://unpkg.com/docsify/lib/plugins/search.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
 </body>
 </html>

@@ -10,14 +10,15 @@ customElements.define('run-code', class extends HTMLElement
                 button {
                     text-decoration: none !important;
                     display: inline-block;
-                    padding: .5rem 1rem;
+                    padding: .375rem .875rem;
                     border-radius: .25rem;
                     background: var(--theme-color);
                     color: #fff !important;
-                    font-size: .92rem;
+                    font-size: .875rem;
                     outline: none;
                     border: 0;
                     font-family: inherit;
+                    line-height: 1rem;
                 }
             </style>
         `

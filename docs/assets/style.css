@@ -6,3 +6,10 @@
 .search input:focus {
     box-shadow: 0px 0px 0px 2px var(--theme-color) !important;
 }
+
+.search .clear-button.show {
+    display: flex !important;
+    align-items: center;
+    padding-left: calc(.875rem + 2px);
+    padding-right: .875rem;
+}

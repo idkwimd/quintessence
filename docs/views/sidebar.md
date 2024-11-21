@@ -1,5 +1,5 @@
 - [Home](/)
-- [Getting Started](/getting-started/)
+- [Installation](/installation)
 - **Components**
 - [Form](/components/form)
   * [Button](/components/button)

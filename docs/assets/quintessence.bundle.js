@@ -1,5 +1,20 @@
-import { ComponentBase } from './shared.js'
+class ComponentBase extends HTMLElement
+{
+    constructor(html, css)
+    {
+        super();
 
+        this.attachShadow({ mode: 'open' }).innerHTML = /*html*/`
+            ${html}
+            <style type="text/css">
+                [root] {
+                    font-family: var(--qs-font-family, 'sans-serif');
+                }
+                ${css}
+            </style>
+        `;
+    }
+}
 
 customElements.define('w-dashboard', class extends ComponentBase
 {
@@ -18,6 +33,6 @@ customElements.define('w-dashboard', class extends ComponentBase
                     background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
                 }
             `
-        )
+        );
     }
-})
+});
