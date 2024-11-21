@@ -7,7 +7,7 @@
   },
   "scripts": {
     "docs": "docsify serve ./docs",
-    "dev": "rollup index.js --file docs/quintessence.bundle.js --watch"
+    "dev": "rollup index.js --file docs/assets/quintessence.bundle.js --watch"
   },
   "keywords": [],
   "author": "",

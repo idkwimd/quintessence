@@ -19,11 +19,20 @@ customElements.define('run-code', class extends HTMLElement
                     border: 0;
                     font-family: inherit;
                     line-height: 1rem;
+                    cursor: pointer;
                 }
             </style>
         `
+
+        this.addEventListener('click', event =>
+        {
+            const href = this.getAttribute('href')
+
+            if (href)
+            {
+                window.open(href, '_blank').focus()
+            }
+        })
     }
-
-
 
 })

@@ -8,4 +8,4 @@
 <w-dashboard></w-dashboard>
 ```
 
-<run-code href="/pages/dashboard.html" />
+<run-code href="/html/dashboard.html" />
