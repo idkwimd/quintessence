@@ -1,0 +1,8 @@
+:root {
+    --base-font-family: "Lexend Deca", Outfit, sans-serif;
+    --sidebar-toggle-offset-top: 6px;
+}
+
+.search input:focus {
+    box-shadow: 0px 0px 0px 2px var(--theme-color) !important;
+}
