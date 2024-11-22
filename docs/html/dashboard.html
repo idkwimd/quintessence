@@ -18,6 +18,16 @@
     <script src="../assets/quintessence.bundle.js"></script>
 </head>
 <body>
-    <w-dashboard></w-dashboard>
+    <w-dashboard id="wd"></w-dashboard>
+
+    <script>
+        wd.menu = [
+            { text: 'Level 1' },
+            { text: 'Level 2', children: [
+                { text: 'Level 2-1' },
+            ]},
+            { text: 'Level 2' },
+        ]
+    </script>
 </body>
 </html>

@@ -1,13 +1,36 @@
 import { ComponentBase } from './shared.js'
 
+/**
+ * @typedef {{ text:string, value?:string|number, href?:string }[]} MenuSchema
+ */
+
 
 customElements.define('w-dashboard', class extends ComponentBase
 {
+    /**
+     * @type {HTMLElement}
+     */
     #selectedItem
+
+    /**
+     * @type {HTMLElement}
+     */
     #root
+
+    /**
+     * @type {HTMLElement}
+     */
     #indicator
+
+    /**
+     * @type {HTMLElement}
+     */
+    #menuElement
+
+    /**
+     * @type {MenuSchema}
+     */
     #menu
-    #contentArea
 
     constructor()
     {
@@ -19,142 +42,32 @@ customElements.define('w-dashboard', class extends ComponentBase
                         <div class="menu-area">
                             <div class="menu-indicator"></div>
                             <div class="menu-background"></div>
-                            <div class="menu" top>
-                                <div class="logo">
+                            <div class="logo">
                                     LOGO
-                                </div>
-                                <div class="item">
-                                    <div class="text">Home</div>
-                                </div>
-                                <div class="item">
-                                    <div class="text">Profile</div>
-                                    <div class="menu">
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 2</div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="text">Sub Profile 3</div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-
+                            <div class="menu" top>
+                                <!-- -->
+                            </div>
+                            <div class="menu-bottom-pad">
+                                <!-- -->
+                            </div>
                         </div>
                         <div class="content-area"></div>
                     </div>
                 </div>
             `,
             /*css*/`
-
+                :host {
+                    --base-color: 221 231 236;
+                }
                 [root] {
                     height: 100vh;
                     width: 100%;
-                    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+                    background-color: rgb(var(--base-color));
                     box-sizing: border-box;
-                    padding: 2rem;
+                    padding: 1.5rem;
                     font-family: var(--qs-font-family, inherit);
+                    user-select: none;
                 }
                 [root] * {
                     box-sizing: inherit;
@@ -165,7 +78,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     display: grid;
                     height: 100%;
                     grid-template: 
-                        'menu nav'      50px
+                        'menu nav'     50px
                         'menu content' 1fr / auto 1fr;
                 }
                 .main > .nav-area {
@@ -174,6 +87,8 @@ customElements.define('w-dashboard', class extends ComponentBase
                 .main > .menu-area {
                     grid-area: menu;
                     position: relative;
+                    display: flex;
+                    flex-direction: column;
                 }
                 .main > .content-area {
                     grid-area: content;
@@ -181,23 +96,27 @@ customElements.define('w-dashboard', class extends ComponentBase
                 }
                 .menu[top] {
                     position: relative;
-                    width: calc(280px + 3px);
+                    width: calc(280px);
                     height: 100%;
-                    padding-right: 1.5rem;
+                    padding-right: 1rem;
                     overflow-y: auto;
                     overflow-x: hidden;
-                    margin-left: -3px;
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
                 }
-                .menu[top] > .logo {
+                .menu[top]::-webkit-scrollbar {
+                    display: none;
+                }
+                .logo {
                     padding-top: 2.5rem;
-                    padding-bottom: 1.5rem;
+                    padding-bottom: 2.5rem;
                     text-align: center;
-                    top: 0;
-                    position: sticky;
+                    position: relative;
                     background: white;
-                    margin-left: 3px;
                     border-top-left-radius: 1.5rem;
+                    border-bottom-left-radius: 6px;
                     z-index: 1;
+                    flex: 1;
                 }
                 .menu > .item {
                     cursor: pointer;
@@ -214,8 +133,12 @@ customElements.define('w-dashboard', class extends ComponentBase
                     font-weight: 500;
                     color: #666666;
                 }
+                .menu > .item:hover > .text {
+                    color: #000000;
+                }
                 .menu > .item.active > .text {
                     color: #000000;
+                    background-image: linear-gradient(to right, rgb(0 0 0 / .05), rgb(0 0 0 / .05));
                 }
                 .menu > .item:has(.menu) > .text::after {
                     content: '';
@@ -233,9 +156,8 @@ customElements.define('w-dashboard', class extends ComponentBase
                 }
                 .menu-indicator {
                     position: absolute;
-                    width: 6px;
+                    width: 4px;
                     height: auto;
-                    border-radius: 6px;
                     background: black;
                 }
                 .menu-background {
@@ -247,24 +169,39 @@ customElements.define('w-dashboard', class extends ComponentBase
                     background: white;
                     border-radius: 1.5rem 0 0 1.5rem;
                 }
+                .menu-bottom-pad {
+                    height: 25px;
+                }
             `
         )
 
         this.#root = this.shadowRoot.querySelector('[root]')
-        this.#contentArea = this.shadowRoot.querySelector('.content-area')
         this.#indicator = this.shadowRoot.querySelector('.menu-indicator')
-        this.#menu = this.shadowRoot.querySelector('.menu[top]')
+        this.#menuElement = this.shadowRoot.querySelector('.menu[top]')
         this.#register()
     }
 
+    /**
+     * Initiate initial operations
+     * @private
+     * @returns {void}
+     */
     #register ()
     {
         this.#root.addEventListener('click', event =>
         {
             if (event.target.classList.contains('item'))
             {
+                event.stopPropagation()
+
                 if (event.target === this.#selectedItem)
                 {
+                    return
+                }
+
+                if (event.target.querySelector('.menu'))
+                {
+                    event.target.classList.toggle('collapsed')
                     return
                 }
 
@@ -273,24 +210,10 @@ customElements.define('w-dashboard', class extends ComponentBase
                     this.#selectedItem.classList.remove('active')
                 }
 
-                if (event.target.querySelector('.menu'))
-                {
-                    event.target.classList.toggle('collapsed')
-
-                    if (event.target.contains(this.#selectedItem))
-                    {
-                        this.#indicator.style.visibility = event.target.classList.contains('collapsed')
-                            ? 'hidden'
-                            : 'visible'
-                    }
-
-                    return
-                }
-
                 this.#selectedItem = event.target
 
                 const selectedItemBr = this.#selectedItem.getBoundingClientRect()
-                const menuBr = this.#menu.getBoundingClientRect()
+                const menuBr = this.#menuElement.getBoundingClientRect()
 
                 this.#selectedItem.classList.add('active')
                 this.#indicator.style.visibility = 'visible'
@@ -299,10 +222,58 @@ customElements.define('w-dashboard', class extends ComponentBase
                 this.#indicator.style.left = (selectedItemBr.left - menuBr.left) * -1 + 'px'
                 this.#selectedItem.appendChild(this.#indicator)
 
-                this.dispatchEvent(new CustomEvent('select', {
-                    detail: this.#selectedItem.dataset.id || this.#selectedItem.getAttribute('href') || this.#selectedItem.textContent
+                this.dispatchEvent(new CustomEvent('menuselect', {
+                    detail: this.#selectedItem.dataset.value || this.#selectedItem.getAttribute('href') || this.#selectedItem.textContent
                 }))
             }
         })
+    }
+
+    #generateMenu ()
+    {
+        let template = ''
+
+        function makeMenu (menu, createMenu = false)
+        {
+            for (const m of menu)
+            {
+                if (createMenu)
+                {
+                    template += `<div class="menu">`
+                }
+
+                template += `
+                    <div class="item">
+                      <div class="text">${m.text}</div>
+                `
+
+                if (m.children)
+                {
+                    makeMenu(m.children, true)
+                }
+
+                template += `
+                    </div>
+                `
+
+                if (createMenu)
+                {
+                    template += '</div>'
+                }
+            }
+        }
+
+        makeMenu(this.#menu)
+
+        this.#menuElement.innerHTML = template
+    }
+
+    /**
+     * @param {MenuSchema} schema 
+     */
+    set menu (schema)
+    {
+        this.#menu = schema
+        this.#generateMenu()
     }
 })
