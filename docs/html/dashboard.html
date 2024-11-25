@@ -4,29 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../assets/quintessence/remixicon/remixicon.css" >
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --qs-font-family: Outfit, sans-serif;
+            --qs-font-family: Inter, Outfit, sans-serif;
         }
         body {
             margin: 0;
         }
     </style>
-    <script src="../assets/quintessence.bundle.js"></script>
+    <script src="../assets/quintessence/index.js"></script>
 </head>
 <body>
-    <w-dashboard id="wd"></w-dashboard>
+    <w-dashboard screen id="wd">
+        Hi
+    </w-dashboard>
 
     <script>
         wd.menu = [
-            { text: 'Level 1' },
-            { text: 'Level 2', children: [
-                { text: 'Level 2-1' },
-            ]},
-            { text: 'Level 2' },
+            {   
+                text: 'Home',
+                icon: 'ri-home-line ri-lg'
+            },
+            { 
+                text: 'Settings',
+                icon: 'ri-settings-2-line ri-lg',
+                children: [
+                    { text: 'Level 2-1' },
+                ]
+            },
+            {
+                text: 'Level 2'
+            }
         ]
     </script>
 </body>

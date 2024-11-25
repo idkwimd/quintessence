@@ -43,7 +43,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                             <div class="menu-indicator"></div>
                             <div class="menu-background"></div>
                             <div class="logo">
-                                    LOGO
+                                LOGO
                             </div>
                             <div class="menu" top>
                                 <!-- -->
@@ -52,33 +52,42 @@ customElements.define('w-dashboard', class extends ComponentBase
                                 <!-- -->
                             </div>
                         </div>
-                        <div class="content-area"></div>
+                        <div class="content-area">
+                            <slot></slot>
+                        </div>
                     </div>
                 </div>
             `,
             /*css*/`
                 :host {
+                    --menu-width: 300px;
                     --base-color: 221 231 236;
+                    --border-radius: 1.5rem;
+                    --gutter: 1.5rem;
                 }
                 [root] {
                     height: 100vh;
                     width: 100%;
                     background-color: rgb(var(--base-color));
                     box-sizing: border-box;
-                    padding: 1.5rem;
+                    padding: var(--gutter);
                     font-family: var(--qs-font-family, inherit);
                     user-select: none;
                 }
                 [root] * {
                     box-sizing: inherit;
                 }
+                :host([screen]) {
+                    --border-radius: 0px;
+                    --gutter: 0px;
+                }
                 .main {
-                    border-radius: 1.5rem;
+                    border-radius: var(--border-radius);
                     background: rgb(255 255 255 / .35);
                     display: grid;
                     height: 100%;
                     grid-template: 
-                        'menu nav'     50px
+                        'menu nav'     60px
                         'menu content' 1fr / auto 1fr;
                 }
                 .main > .nav-area {
@@ -92,11 +101,12 @@ customElements.define('w-dashboard', class extends ComponentBase
                 }
                 .main > .content-area {
                     grid-area: content;
-                    border-bottom-right-radius: 1.5rem;
+                    border-bottom-right-radius: var(--border-radius);
+                    padding: 1rem 1.75rem;
                 }
                 .menu[top] {
                     position: relative;
-                    width: calc(280px);
+                    width: var(--menu-width);
                     height: 100%;
                     padding-right: 1rem;
                     overflow-y: auto;
@@ -113,7 +123,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     text-align: center;
                     position: relative;
                     background: white;
-                    border-top-left-radius: 1.5rem;
+                    border-top-left-radius: var(--border-radius);
                     border-bottom-left-radius: 6px;
                     z-index: 1;
                     flex: 1;
@@ -125,13 +135,15 @@ customElements.define('w-dashboard', class extends ComponentBase
                     position: relative;
                 }
                 .menu > .item > .text {
-                    padding: .5rem 0 .5rem 1rem;
+                    padding: .55rem 0 .55rem .875rem;
                     pointer-events: none;
                     display: flex;
                     align-items: center;
-                    margin-bottom: .25rem;
                     font-weight: 500;
                     color: #666666;
+                }
+                .menu > .item > .text > .icon {
+                    margin-right: .875rem;
                 }
                 .menu > .item:hover > .text {
                     color: #000000;
@@ -147,6 +159,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     height: 24px;
                     display: inline-block;
                     margin-left: auto;
+                    margin-right: .5rem;
                 }
                 .menu > .item.collapsed:has(.menu) > .text::after {
                     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
@@ -167,7 +180,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     bottom: 0;
                     top: 0;
                     background: white;
-                    border-radius: 1.5rem 0 0 1.5rem;
+                    border-radius: var(--border-radius) 0 0 var(--border-radius);
                 }
                 .menu-bottom-pad {
                     height: 25px;
@@ -199,6 +212,11 @@ customElements.define('w-dashboard', class extends ComponentBase
                     return
                 }
 
+                if (event.target.dataset.href)
+                {
+                    window.history.pushState({}, '', event.target.dataset.href)
+                }
+
                 if (event.target.querySelector('.menu'))
                 {
                     event.target.classList.toggle('collapsed')
@@ -214,6 +232,7 @@ customElements.define('w-dashboard', class extends ComponentBase
 
                 const selectedItemBr = this.#selectedItem.getBoundingClientRect()
                 const menuBr = this.#menuElement.getBoundingClientRect()
+                const menuIndex = parseInt(this.#selectedItem.dataset.index)
 
                 this.#selectedItem.classList.add('active')
                 this.#indicator.style.visibility = 'visible'
@@ -223,7 +242,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                 this.#selectedItem.appendChild(this.#indicator)
 
                 this.dispatchEvent(new CustomEvent('menuselect', {
-                    detail: this.#selectedItem.dataset.value || this.#selectedItem.getAttribute('href') || this.#selectedItem.textContent
+                    detail: this.#menu[menuIndex] || this.#selectedItem.textContent
                 }))
             }
         })
@@ -235,16 +254,31 @@ customElements.define('w-dashboard', class extends ComponentBase
 
         function makeMenu (menu, createMenu = false)
         {
-            for (const m of menu)
+            for (const [i, m] of menu.entries())
             {
                 if (createMenu)
                 {
                     template += `<div class="menu">`
                 }
 
+                const href = m.href ? ` data-href="${m.href}"` : ''
+                const value = m.value ? ` data-value="${m.value}"`: ''
+
                 template += `
-                    <div class="item">
-                      <div class="text">${m.text}</div>
+                    <div class="item" data-index="${i}"${href}${value}>
+                      <div class="text">
+                `
+
+                if (m.icon)
+                {
+                    template += `
+                        <i class="${m.icon} icon"></i>
+                    `
+                }
+
+                template += `
+                        <span class="title">${m.text}</span>
+                      </div>
                 `
 
                 if (m.children)
