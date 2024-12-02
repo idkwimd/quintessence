@@ -61,7 +61,7 @@ customElements.define('w-dashboard', class extends ComponentBase
             /*css*/`
                 :host {
                     --menu-width: 300px;
-                    --base-color: 221 231 236;
+                    --base-color: 232 235 237;
                     --border-radius: 1.5rem;
                     --gutter: 1.5rem;
                 }
@@ -72,7 +72,6 @@ customElements.define('w-dashboard', class extends ComponentBase
                     box-sizing: border-box;
                     padding: var(--gutter);
                     font-family: var(--qs-font-family, inherit);
-                    user-select: none;
                 }
                 [root] * {
                     box-sizing: inherit;
@@ -87,7 +86,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     display: grid;
                     height: 100%;
                     grid-template: 
-                        'menu nav'     60px
+                        'menu nav'     50px
                         'menu content' 1fr / auto 1fr;
                 }
                 .main > .nav-area {
@@ -103,6 +102,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     grid-area: content;
                     border-bottom-right-radius: var(--border-radius);
                     padding: 1rem 1.75rem;
+                    overflow-y: auto;
                 }
                 .menu[top] {
                     position: relative;
@@ -113,6 +113,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     overflow-x: hidden;
                     -ms-overflow-style: none;
                     scrollbar-width: none;
+                    user-select: none;
                 }
                 .menu[top]::-webkit-scrollbar {
                     display: none;
@@ -252,11 +253,11 @@ customElements.define('w-dashboard', class extends ComponentBase
     {
         let template = ''
 
-        function makeMenu (menu, createMenu = false)
+        function makeMenu (menu, isNested = false)
         {
             for (const [i, m] of menu.entries())
             {
-                if (createMenu)
+                if (isNested)
                 {
                     template += `<div class="menu">`
                 }
@@ -290,7 +291,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                     </div>
                 `
 
-                if (createMenu)
+                if (isNested)
                 {
                     template += '</div>'
                 }

@@ -5,7 +5,7 @@ customElements.define('run-code', class extends HTMLElement
         super()
 
         this.attachShadow({ mode: 'open' }).innerHTML = /*html*/`
-            <button>&#9654;&#160;&#160;Run</button>
+            <button>&#9654;&#160;&#160;Preview</button>
             <style>
                 button {
                     text-decoration: none !important;
@@ -34,5 +34,4 @@ customElements.define('run-code', class extends HTMLElement
             }
         })
     }
-
 })
