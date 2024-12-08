@@ -55,6 +55,8 @@ export class ComponentBase extends HTMLElement
     {
         for (const slot of this.shadowRoot.querySelectorAll('slot[name][display]'))
         {
+            slot.style.display = 'none'
+            
             slot.addEventListener('slotchange', (ev) =>
             {
                 slot.style.display = ev.target.assignedNodes().length > 0

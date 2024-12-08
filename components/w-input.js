@@ -35,6 +35,8 @@ customElements.define('w-input', class extends ComponentBase
                     height: 100%;
                     font-family: inherit;
                     font-size: .875rem;
+                    margin: 0;
+                    line-height: 1.12rem;
                 }
                 slot[name="before"] {
                     margin-right: .5rem;
