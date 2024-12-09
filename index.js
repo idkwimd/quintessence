@@ -1,3 +1,6 @@
 import './components/w-dashboard.js'
 import './components/w-box.js'
 import './components/w-input.js'
+import './components/w-select.js'
+import './components/w-better-select.js'
+import './components/w-button.js'

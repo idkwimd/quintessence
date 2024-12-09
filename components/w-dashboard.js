@@ -61,14 +61,13 @@ customElements.define('w-dashboard', class extends ComponentBase
             /*css*/`
                 :host {
                     --menu-width: 300px;
-                    --base-color: 232 235 237;
-                    --border-radius: 1.5rem;
-                    --gutter: 1.5rem;
+                    --border-radius: 0px;
+                    --gutter: 0px;
                 }
                 [root] {
                     height: 100vh;
                     width: 100%;
-                    background-color: rgb(var(--base-color));
+                    background-color: rgb(var(--qs-color-base, 240 242 243));
                     box-sizing: border-box;
                     padding: var(--gutter);
                     font-family: var(--qs-font-family, inherit);
@@ -76,13 +75,8 @@ customElements.define('w-dashboard', class extends ComponentBase
                 [root] * {
                     box-sizing: inherit;
                 }
-                :host([screen]) {
-                    --border-radius: 0px;
-                    --gutter: 0px;
-                }
                 .main {
                     border-radius: var(--border-radius);
-                    background: rgb(255 255 255 / .35);
                     display: grid;
                     height: 100%;
                     grid-template: 
@@ -151,7 +145,7 @@ customElements.define('w-dashboard', class extends ComponentBase
                 }
                 .menu > .item.active > .text {
                     color: #000000;
-                    background-image: linear-gradient(to right, rgb(0 0 0 / .05), rgb(0 0 0 / .05));
+                    background: rgb(var(--qs-color-base, 240 242 243));
                 }
                 .menu > .item:has(.menu) > .text::after {
                     content: '';

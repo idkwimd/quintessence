@@ -7,27 +7,24 @@
     <link rel="stylesheet" href="../assets/quintessence/remixicon/remixicon.css" >
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --qs-font-family: Inter, Outfit, sans-serif;
-        }
-        body {
-            margin: 0;
-        }
-    </style>
     <script src="../assets/quintessence/index.js"></script>
 </head>
 <body>
-    <w-dashboard screen id="wd">
-        <w-box>
+    <w-dashboard id="wd">
+        <w-box class="shadow-lg">
             <span slot="header">Transform Heading</span>
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias sint pariatur cum ea fugiat repellendus laborum, culpa soluta. Tempore nesciunt consequatur nostrum dicta saepe nulla deleniti fuga, aspernatur sapiente, debitis vel corporis quasi explicabo, a iste repellat officia autem rerum vitae dolor eum? Soluta aliquam sapiente harum, qui, consequatur inventore quos aspernatur quaerat ipsum sed iste doloribus corporis porro nihil ipsa possimus numquam sunt nemo temporibus praesentium dolorum dicta quae alias eligendi. Assumenda dolore hic, esse accusantium voluptate quisquam deleniti id quae ipsa praesentium necessitatibus ea facilis minus aliquid optio illo sapiente, voluptatibus vel voluptatem, est ex. Soluta maiores provident nisi ut quibusdam quas facere quidem, in ratione asperiores! Similique voluptatem placeat, dolorem, cumque eaque dolore quos quis, laboriosam modi ratione rerum deleniti corporis accusamus incidunt maxime est aut corrupti obcaecati? Illum corrupti fuga saepe accusamus adipisci eligendi, consectetur atque! Illo, natus recusandae culpa nesciunt asperiores totam placeat velit ratione sed perferendis esse. Nihil expedita, distinctio quas, placeat quam pariatur reiciendis laboriosam molestias dolorum incidunt nam facere sit ut! Fugiat velit harum dolore quisquam sapiente perferendis dolor ab nobis ea enim doloremque, deleniti voluptatum est veritatis in rem, ullam molestiae eius tempore voluptate! Cumque sint maxime quasi doloribus corporis aut?
             <br />
             <br />
-            <w-input placeholder="Wait...">
-                <i class="ri-ancient-gate-line ri-lg" slot="before"></i>
-            </w-input>
+            <form id="frm">
+                <w-input block type="datetime-local" placeholder="Wait..." name="dunn">
+                    <i class="ri-cloud-line ri-lg" slot="before"></i>
+                </w-input>
+                <br />
+                <w-better-select multiselect block id="sel2" name="ju2222" placeholder="Select a value"></w-better-select>
+                <br/>
+                <w-button>Submit</w-button>
+            </form>
         </w-box>
     </w-dashboard>
 
@@ -48,6 +45,18 @@
                 text: 'Level 2'
             }
         ]
+
+        sel2.options = [
+            { text: 'Russia', value: 'ru' },
+            { text: 'Australia', value: 'au' },
+            { text: 'India', value: 'in' },
+        ]
+
+        frm.addEventListener('submit', (ev) => {
+            ev.preventDefault()
+            const frmData = new FormData(frm)
+            console.log(Object.fromEntries(frmData.entries()))
+        })
     </script>
 </body>
 </html>
