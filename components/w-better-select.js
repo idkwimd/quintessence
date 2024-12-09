@@ -8,6 +8,7 @@ customElements.define('w-better-select', class extends ComponentBase
     #isMultiselect
     #selectedValues = []
     #searchEl
+    #activeClosePopupHandler
 
     constructor()
     {
@@ -110,6 +111,21 @@ customElements.define('w-better-select', class extends ComponentBase
 
     connectedCallback()
     {
+        this.#createPopup()
+        this.ref.input.addEventListener('mousedown', this.#onInputClick.bind(this))
+        this.#activeClosePopupHandler = this.#closePopup.bind(this)
+        this.#popupEl.addEventListener('mousedown', this.#onPopupClick.bind(this))
+        this.ownerDocument.addEventListener('mousedown', this.#activeClosePopupHandler)
+    }
+
+    disconnectedCallback()
+    {
+        this.ownerDocument.removeEventListener('mousedown', this.#activeClosePopupHandler)
+        this.#popupEl.remove()
+    }
+
+    #createPopup()
+    {
         const el = this.ownerDocument.createElement('div')
         const searchBoxEl = this.ownerDocument.createElement('div')
         const searchInputEl  = this.ownerDocument.createElement('input')
@@ -126,97 +142,110 @@ customElements.define('w-better-select', class extends ComponentBase
         el.appendChild(searchBoxEl)
         el.appendChild(optionsBoxEl)
 
-        if (this.hasAttribute('multiselect'))
-        {
-            this.#isMultiselect = true
-        }
-        
+        this.#isMultiselect = this.hasAttribute('multiselect')
         this.ownerDocument.body.appendChild(el)
         this.#popupEl = el
         this.#searchEl = searchInputEl
+        searchBoxEl.addEventListener('input', this.#onSearchBoxChange.bind(this))
+    }
 
-        this.ref.input.addEventListener('mousedown', (ev) =>
+    /**
+     * Fires when element click. Toggle the popup
+     * @param {Event} ev 
+     * @returns {void}
+     */
+    #onInputClick(ev)
+    {
+        ev.stopPropagation()
+            
+        if (this.#popupEl.classList.contains('hidden'))
         {
-            if (this.#popupEl.classList.contains('hidden'))
+            this.#filterOptions()
+            this.#popupEl.classList.remove('hidden')
+
+            setTimeout(() =>
             {
-                this.#filterOptions()
-                this.#popupEl.classList.remove('hidden')
+                this.#searchEl.focus()
+            },
+            0)
+        }
 
-                setTimeout(() =>
-                {
-                    this.#searchEl.focus()
-                },
-                0)
-            }
+        const gap = 4
+        const elRect = this.ref.input.getBoundingClientRect()
+        const popupRect = this.#popupEl.getBoundingClientRect()
 
-            const gap = 4
-            const elRect = this.ref.input.getBoundingClientRect()
-            const popupRect = this.#popupEl.getBoundingClientRect()
+        if (elRect.bottom + gap + popupRect.height >= window.innerHeight)
+        {
+            this.#popupEl.style.top = 'auto'
+            this.#popupEl.style.bottom = (window.innerHeight - elRect.top) + 4 + 'px'
+        }
+        else
+        {
+            this.#popupEl.style.bottom = 'auto'
+            this.#popupEl.style.top = elRect.bottom + 4 + 'px'
+        }
+        
+        this.#popupEl.style.left = elRect.left + 'px'
+        this.#popupEl.style.width = elRect.width + 'px'
+    }
 
-            if (elRect.bottom + gap + popupRect.height >= window.innerHeight)
+    /**
+     * Fires when search value changes
+     * @param {Event} ev
+     * @returns {void} 
+     */
+    #onSearchBoxChange(ev)
+    {
+        this.#filterOptions(ev.target.value.trim())
+    }
+
+    /**
+     * Close the popup
+     * @returns {void}
+     */
+    #closePopup ()
+    {
+        this.#popupEl.classList.add('hidden')
+    }
+
+    /**
+     * Handle popup element click
+     * @param {Event} ev 
+     * @returns {void}
+     */
+    #onPopupClick (ev)
+    {
+        ev.stopPropagation()
+
+        if (ev.target.matches('.qs-bs-option'))
+        {
+            const value = ev.target.dataset.value
+
+            if (this.#isMultiselect)
             {
-                this.#popupEl.style.top = 'auto'
-                this.#popupEl.style.bottom = (window.innerHeight - elRect.top) + 4 + 'px'
+                ev.target.classList.toggle('selected')
             }
             else
             {
-                this.#popupEl.style.bottom = 'auto'
-                this.#popupEl.style.top = elRect.bottom + 4 + 'px'
+                ev.target.parentNode.querySelector('.selected')?.classList.remove('selected')
+                ev.target.classList.add('selected')
+                this.#popupEl.classList.add('hidden')
             }
-            
-            this.#popupEl.style.left = elRect.left + 'px'
-            this.#popupEl.style.width = elRect.width + 'px'
-        })
 
-        this.addEventListener('mousedown', (ev) =>
-        {
-            ev.stopPropagation()
-        })
+            this.ref.input.value = [...this.#popupEl.querySelectorAll('.selected')]
+                .map(x => x.textContent.trim())
+                .join(', ')
 
-        this.#popupEl.addEventListener('mousedown', (ev) =>
-        {
-            ev.stopPropagation()
-
-            if (ev.target.matches('.qs-bs-option'))
-            {
-                const value = ev.target.dataset.value
-
-                if (this.#isMultiselect)
-                {
-                    ev.target.classList.toggle('selected')
-                }
-                else
-                {
-                    ev.target.parentNode.querySelector('.selected')?.classList.remove('selected')
-                    ev.target.classList.add('selected')
-                    this.#popupEl.classList.add('hidden')
-                }
-
-                this.ref.input.value = [...this.#popupEl.querySelectorAll('.selected')]
-                    .map(x => x.textContent.trim())
-                    .join(', ')
-
-                this.#internals.setFormValue(this.value)
-                this.dispatchEvent(new Event('change'))
-            }
-        })
-
-        this.ownerDocument.addEventListener('mousedown', () =>
-        {
-            this.#popupEl.classList.add('hidden')
-        })
-
-        searchBoxEl.addEventListener('input', (ev) =>
-        {
-            this.#filterOptions(ev.target.value.trim())
-        })
+            this.#internals.setFormValue(this.value)
+            this.dispatchEvent(new Event('change'))
+        }
     }
 
-    disconnectedCallback()
-    {
-        this.#popupEl.remove()
-    }
-
+    /**
+     * Filter options based on keyword
+     * @param {string} keyword 
+     * @returns {void}
+     */
     #filterOptions(keyword)
     {
         if (keyword === undefined)
@@ -237,6 +266,10 @@ customElements.define('w-better-select', class extends ComponentBase
         })
     }
 
+    /**
+     * Regenrate dropdown options
+     * @returns {void}
+     */
     #reloadOptions()
     {
         let html = ''
@@ -257,6 +290,7 @@ customElements.define('w-better-select', class extends ComponentBase
     }
 
     /**
+     * Set dropdown options
      * @param {{ text: string, value: string | number }[]} _ 
      */
     set options(_)
@@ -265,6 +299,10 @@ customElements.define('w-better-select', class extends ComponentBase
         this.#reloadOptions()
     }
 
+    /**
+     * Get selected value
+     * @returns {string}
+     */
     get value()
     {
         return [...this.#popupEl.querySelectorAll('.selected')].map(x => x.dataset.value).join(';')
