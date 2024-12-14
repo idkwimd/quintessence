@@ -1,321 +1,354 @@
-import { ComponentBase } from './shared.js'
+/**
+ * @typedef IOptions
+ * @property { string } text
+ * @property { string | number } value
+ */
 
-customElements.define('w-better-select', class extends ComponentBase
+/**
+ * Representative value of the element
+ * @typedef { string | number } IValue
+ */
+
+import { ComponentBase } from './shared.js'
+import './w-input.js'
+
+customElements.define('w-better-select-option', class extends ComponentBase
 {
-    #popupEl
-    #internals
+    /**
+     * @type { IOptions[] | undefined }
+     */
     #options
-    #isMultiselect
-    #selectedValues = []
-    #searchEl
-    #activeClosePopupHandler
+
+    /**
+     * @type { IValue | undefined }
+     */
+    #value
+
+    /**
+     * @type {HTMLElement}
+     */
+    #selectedItem
 
     constructor()
     {
         super(
             /*html*/`
-                <w-input ref="input" block readonly autocomplete="off">
-                    <i class="ri-arrow-down-s-line ri-lg caret" slot="after"></i>
-                </w-input>
+                <div ref="root">
+                    <div class="search-box">
+                        <i class="icon ri-search-line"></i>
+                        <input class="search" placeholder="Search..." ref="searchInput" />
+                    </div>
+                    <div class="options" ref="options"></div>
+                </div>
             `,
             /*css*/`
                 :host {
-                    border-radius: .375rem;
+                    display: none;
+                    position: fixed;
+                    border-radius: .5rem;
+                    z-index: 999;
+                    max-height: 40vh;
                 }
-                .caret {
-                    position: relative;
-                    top: 1px;
+                :host([active]) {
+                    display: block;
+                }
+                [ref="root"] {
+                    border-radius: .5rem;
+                    background: rgb(var(--qs-color-base-l2));
+                    border: 1px solid rgb(var(--qs-color-base-border));
+                    font-size: .875rem;
+                    overflow-y: auto;
+                    box-shadow: var(--qs-shadow-lg);
+                }
+                .search-box {
+                    display: flex;
+                    align-items: center;
+                    border-bottom: 1px solid rgb(var(--qs-color-base-border));
+                }
+                .search-box > .icon {
+                    margin-left: .625rem;
+                }
+                .search-box > .search {
+                    padding: .625rem;
+                    outline: none;
+                    border: 0;
+                    background: transparent;
+                    font-family: inherit;
+                }
+                .options {
+                    padding: .375rem;
+                }
+                .options > .item {
+                    padding: .375rem .5rem;
+                    border-radius: .25rem;
+                    cursor: default;
+                }
+                .options > .item:hover {
+                    background: rgb(0 0 0 / .08);
+                }
+                .options > .item.hidden {
+                    display: none;
+                }
+                .options > .item.selected {
+                    color: rgb(var(--qs-color-primary));
                 }
             `
         )
 
-        if (!this.ownerDocument.head.querySelector('style[data-id="qs-bs"]'))
-        {
-            const styleEl = this.ownerDocument.createElement('style')
-                  styleEl.dataset.id = 'qs-bs'
+        this.ref.root.addEventListener('click', this.#onElementClick.bind(this))
+        this.ref.searchInput.addEventListener('input', this.#filterOptions.bind(this))
+    }
 
-            styleEl.textContent = /*css*/`
-                .qs-bs-popup {
-                    position: fixed;
-                    z-index: 9999;
-                    top: 0;
-                    left: 0;
-                    border-radius: .375rem;
-                    background: rgb(var(--qs-color-base-l2));
-                    box-shadow: var(--qs-shadow-lg);
-                    border: 1px solid rgb(var(--qs-color-base-border));
-                    min-width: 120px;
-                    max-height: 45vh;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    user-select: none;
-                    color:  rgb(var(--qs-color-base-text));
+    attributeChangedCallback(name, ov, nv)
+    {
+        if (name === 'active' && nv !== null)
+        {
+            this.ref.searchInput.focus()
+        }
+    }
+
+    /**
+     * @returns { IValue | undefined }
+     */
+    get value ()
+    {
+        return this.#value
+    }
+
+    /**
+     * Handler for when element was clicked on
+     * @param { Event } ev 
+     */
+    #onElementClick (ev)
+    {
+        ev.stopPropagation()
+
+        if (ev.target.classList.contains('item'))
+        {
+            if (this.isMultiselect)
+            {
+                ev.target.classList.toggle('selected')
+                this.#value = [...this.ref.options.querySelectorAll('.item.selected')].map(x => x.$option)   
+            }
+            else
+            {
+                if (this.#selectedItem)
+                {
+                    this.#selectedItem.classList.remove('selected')
                 }
-                .qs-bs-popup.hidden {
-                    display: none;
-                }
-                .qs-bs-popup > .searchbox {
-                    display: flex;
-                    align-items: center;
-                    padding: .375rem;
-                    border-bottom: 1px solid rgb(var(--qs-color-base-border));
-                }
-                .qs-bs-popup > .searchbox > i {
-                    margin-left: .375rem;
-                    margin-right: .125rem;
-                }
-                .qs-bs-popup > .searchbox > input {
-                    background: transparent;
-                    border: 0;
-                    outline: none;
-                    font-size: .875rem;
-                    padding: .375rem .5rem;
-                    font-family: inherit;
-                }
-                .qs-bs-popup > .options {
-                    padding: .375rem;
-                }
-                .qs-bs-popup > .options > .qs-bs-option {
-                    font-size: .875rem;
-                    padding: .375rem .5rem;
-                    border-radius: .25rem;
-                    width: 100%;
-                    cursor: default;
-                    text-shadow: 0 1px 2px rgb(var(--qs-color-base-text) / .2);
-                }
-                .qs-bs-popup > .options > .qs-bs-option > .check {
-                    display: none;
-                    margin-right: .375rem;
-                }
-                .qs-bs-popup > .options > .qs-bs-option.hidden {
-                    display: none;
-                }
-                .qs-bs-popup > .options > .qs-bs-option.selected {
-                    color: rgb(var(--qs-color-primary));
-                }
-                .qs-bs-popup > .options > .qs-bs-option.selected > .check {
-                    display: inline;
-                }
-                .qs-bs-popup > .options > .qs-bs-option:hover {
-                    background: rgb(var(--qs-color-primary) / .1);
-                    color: rgb(var(--qs-color-primary));
-                    text-shadow: 0 1px 2px rgb(var(--qs-color-primary) / .2);
+
+                this.#selectedItem = ev.target
+                this.#selectedItem.classList.add('selected')
+                this.#value = ev.target.$option
+                this.hide()
+            }
+
+            this.dispatchEvent(new CustomEvent('change', {
+                detail: this.value
+            }))
+        }
+    }
+
+    /**
+     * Renders options
+     */
+    #renderOptions ()
+    {
+        this.ref.options.innerHTML = ''
+
+        for (const opt of this.#options)
+        {
+            const el = this.ownerDocument.createElement('div')
+                  el.dataset.value = opt.value
+                  el.className = 'item'
+                  el.textContent = opt.text
+                  el.$option = opt
+
+            this.ref.options.appendChild(el)
+        }
+    }
+
+    /**
+     * Shows/hides options based on search keyword
+     */
+    #filterOptions ()
+    {
+        this.ref.options.querySelectorAll('.item').forEach(el =>
+        {
+            const matchText = this.ref.searchInput.value.toLowerCase()
+            const targetText = el.textContent.toLowerCase()
+            el.classList[targetText.includes(matchText) ? 'remove' : 'add']('hidden')
+        })
+    }
+
+    get isMultiselect()
+    {
+        return this.hasAttribute('multiselect')
+    }
+
+    toggle()
+    {
+        this.toggleAttribute('active')
+    }
+
+    hide()
+    {
+        this.removeAttribute('active')
+    }
+
+    /**
+     * Set dropdown options
+     * @param { IOptions } data 
+     */
+    set options (data)
+    {
+        this.#options = data
+        this.#renderOptions()
+    }
+
+    static observedAttributes = ['active']
+})
+
+customElements.define('w-better-select', class extends ComponentBase
+{
+    /**
+     * @type { HTMLElement }
+     */
+    #dropdown
+
+    /**
+     * @type { Function }
+     */
+    #docClickCb
+
+    /**
+     * @type { IValue }
+     */
+    #value
+
+    /**
+     * @type { ElementInternals }
+     */
+    #internals
+
+    constructor()
+    {
+        super(
+            /*html*/`
+                <w-input ref="input" root readonly placeholder="Select...">
+                    <i slot="after" class="caret ri-arrow-down-s-line ri-lg"></i>
+                </w-input>
+            `,
+            /*css*/`
+                .caret {
+                    margin-top: 1px;
                 }
             `
-
-            this.ownerDocument.head.appendChild(styleEl)
-        }
+        )
 
         this.#internals = this.attachInternals()
     }
 
     connectedCallback()
     {
-        this.#createPopup()
-        this.ref.input.addEventListener('mousedown', this.#onInputClick.bind(this))
-        this.#activeClosePopupHandler = this.#closePopup.bind(this)
-        this.#popupEl.addEventListener('mousedown', this.#onPopupClick.bind(this))
-        this.ownerDocument.addEventListener('mousedown', this.#activeClosePopupHandler)
+        this.#dropdown = this.ownerDocument.createElement('w-better-select-option')
+
+        if (this.hasAttribute('multiselect'))
+        {
+            this.#dropdown.setAttribute('multiselect', '')
+        }
+
+        this.#dropdown.addEventListener('change', this.#onSelect.bind(this))
+        this.ownerDocument.body.appendChild(this.#dropdown)
+        this.ref.input.addEventListener('click', this.#onInputClick.bind(this))
+        this.#docClickCb = this.#hideDropdown.bind(this)
+        this.ownerDocument.addEventListener('click', this.#docClickCb)
+    }
+
+    /**
+     * 
+     * @param {CustomEvent} ev 
+     */
+    #onSelect (ev)
+    {
+        this.ref.input.value = ev.detail instanceof Array
+            ? ev.detail.map(x => x.text).join(', ')
+            : ev.detail.text
+
+        this.#value = ev.detail instanceof Array
+            ? ev.detail.map(x => x.value).join(';')
+            : ev.detail.value
+
+        this.#internals.setFormValue(this.#value)
+    }
+
+    #onInputClick (ev)
+    {
+        ev.stopPropagation()
+        this.#toggleDropdown()
+    }
+
+    #toggleDropdown()
+    {
+        this.#dropdown.toggle()
+        
+        const dropdownRect = this.#dropdown.getBoundingClientRect()
+        const thisRect = this.getBoundingClientRect()
+
+        if (dropdownRect.height + thisRect.bottom + 4 >= window.innerHeight)
+        {
+            this.#dropdown.style.top = 'auto'
+            this.#dropdown.style.bottom = window.innerHeight - thisRect.top + 4 + 'px'
+        }
+        else
+        {
+            this.#dropdown.style.bottom = 'auto'
+            this.#dropdown.style.top = thisRect.bottom + 4 + 'px'
+        }
+
+        this.#dropdown.style.left = thisRect.left + 'px'
+        this.#dropdown.style.width = thisRect.width + 'px'
+    }
+    
+    #hideDropdown ()
+    {
+        this.#dropdown.removeAttribute('active')
+    }
+
+    /**
+     * @param { IOptions } data 
+     */
+    set options (data)
+    {
+        this.#dropdown.options = data
+    }
+
+    get value ()
+    {
+        return this.#value
     }
 
     disconnectedCallback()
     {
-        this.ownerDocument.removeEventListener('mousedown', this.#activeClosePopupHandler)
-        this.#popupEl.remove()
+        this.#dropdown.remove()
+        this.ownerDocument.removeEventListener('click', this.#docClickCb)
     }
 
-    #createPopup()
-    {
-        const el = this.ownerDocument.createElement('div')
-        const searchBoxEl = this.ownerDocument.createElement('div')
-        const searchInputEl  = this.ownerDocument.createElement('input')
-        const optionsBoxEl = this.ownerDocument.createElement('div')
-        const iconEl = this.ownerDocument.createElement('i')
-        
-        searchBoxEl.className = 'searchbox'
-        searchInputEl.setAttribute('placeholder', 'Search...')
-        searchBoxEl.appendChild(iconEl)
-        searchBoxEl.appendChild(searchInputEl)
-        optionsBoxEl.className = 'options'
-        iconEl.className = 'ri-search-2-line'
-        el.className = 'qs-bs-popup hidden'
-        el.appendChild(searchBoxEl)
-        el.appendChild(optionsBoxEl)
-
-        this.#isMultiselect = this.hasAttribute('multiselect')
-        this.ownerDocument.body.appendChild(el)
-        this.#popupEl = el
-        this.#searchEl = searchInputEl
-        searchBoxEl.addEventListener('input', this.#onSearchBoxChange.bind(this))
-    }
-
-    /**
-     * Fires when element click. Toggle the popup
-     * @param {Event} ev 
-     * @returns {void}
-     */
-    #onInputClick(ev)
-    {
-        ev.stopPropagation()
-            
-        if (this.#popupEl.classList.contains('hidden'))
-        {
-            this.#filterOptions()
-            this.#popupEl.classList.remove('hidden')
-
-            setTimeout(() =>
-            {
-                this.#searchEl.focus()
-            },
-            0)
-        }
-
-        const gap = 4
-        const elRect = this.ref.input.getBoundingClientRect()
-        const popupRect = this.#popupEl.getBoundingClientRect()
-
-        if (elRect.bottom + gap + popupRect.height >= window.innerHeight)
-        {
-            this.#popupEl.style.top = 'auto'
-            this.#popupEl.style.bottom = (window.innerHeight - elRect.top) + 4 + 'px'
-        }
-        else
-        {
-            this.#popupEl.style.bottom = 'auto'
-            this.#popupEl.style.top = elRect.bottom + 4 + 'px'
-        }
-        
-        this.#popupEl.style.left = elRect.left + 'px'
-        this.#popupEl.style.width = elRect.width + 'px'
-    }
-
-    /**
-     * Fires when search value changes
-     * @param {Event} ev
-     * @returns {void} 
-     */
-    #onSearchBoxChange(ev)
-    {
-        this.#filterOptions(ev.target.value.trim())
-    }
-
-    /**
-     * Close the popup
-     * @returns {void}
-     */
-    #closePopup ()
-    {
-        this.#popupEl.classList.add('hidden')
-    }
-
-    /**
-     * Handle popup element click
-     * @param {Event} ev 
-     * @returns {void}
-     */
-    #onPopupClick (ev)
-    {
-        ev.stopPropagation()
-
-        if (ev.target.matches('.qs-bs-option'))
-        {
-            const value = ev.target.dataset.value
-
-            if (this.#isMultiselect)
-            {
-                ev.target.classList.toggle('selected')
-            }
-            else
-            {
-                ev.target.parentNode.querySelector('.selected')?.classList.remove('selected')
-                ev.target.classList.add('selected')
-                this.#popupEl.classList.add('hidden')
-            }
-
-            this.ref.input.value = [...this.#popupEl.querySelectorAll('.selected')]
-                .map(x => x.textContent.trim())
-                .join(', ')
-
-            this.#internals.setFormValue(this.value)
-            this.dispatchEvent(new Event('change'))
-        }
-    }
-
-    /**
-     * Filter options based on keyword
-     * @param {string} keyword 
-     * @returns {void}
-     */
-    #filterOptions(keyword)
-    {
-        if (keyword === undefined)
-        {
-            this.#searchEl.value = ''
-        }
-
-        this.#popupEl.querySelectorAll('.qs-bs-option').forEach(el =>
-        {
-            if (el.textContent.toLowerCase().includes((keyword || '').toLowerCase()))
-            {
-                el.classList.remove('hidden')
-            }
-            else
-            {
-                el.classList.add('hidden')
-            }
-        })
-    }
-
-    /**
-     * Regenrate dropdown options
-     * @returns {void}
-     */
-    #reloadOptions()
-    {
-        let html = ''
-
-        for (const x of this.#options)
-        {
-            if (x.value === undefined || x.value === '')
-            {
-                continue
-            }
-
-            html += `<div class="qs-bs-option" data-value="${x.value.toString()}">
-                <i class="ri-check-line check"></i>${x.text}
-            </div>`
-        }
-
-        this.#popupEl.querySelector('.options').innerHTML = html
-    }
-
-    /**
-     * Set dropdown options
-     * @param {{ text: string, value: string | number }[]} _ 
-     */
-    set options(_)
-    {
-        this.#options = _
-        this.#reloadOptions()
-    }
-
-    /**
-     * Get selected value
-     * @returns {string}
-     */
-    get value()
-    {
-        return [...this.#popupEl.querySelectorAll('.selected')].map(x => x.dataset.value).join(';')
-    }
-
-    attributeChangedCallback(name, ov, nv)
-    {
-        if (this.constructor.observedAttributes.includes(name))
-        {
-            this.ref.input.setAttribute(name, nv)
-        }
-    }
+    // attributeChangedCallback(name, ov, nv)
+    // {
+    //     if (name === 'multiselect')
+    //     {
+    //         if (nv === null)
+    //         {
+    //             this.#dropdown.removeAttribute('multiselect')
+    //         }
+    //         else
+    //         {
+    //             this.#dropdown.setAttribute('multiselect', '')
+    //         }
+    //     }
+    // }
 
     static formAssociated = true
-    static observedAttributes = ['placeholder']
+    static observedAttributes = ['multiselect']
 })

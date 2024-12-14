@@ -1,7 +1,10 @@
 import { ComponentBase } from './shared.js'
 
 /**
- * @typedef {{ text:string, value?:string|number, href?:string }[]} MenuSchema
+ * @typedef MenuSchema
+ * @property { string } text
+ * @property { string | number } [value]
+ * @property { string } [href]
  */
 
 

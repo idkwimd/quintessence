@@ -2,6 +2,9 @@ import { ComponentBase } from './shared.js'
 
 customElements.define('w-input', class extends ComponentBase
 {
+    /**
+     * @type { ElementInternals }
+     */
     #internals
 
     constructor()
@@ -90,11 +93,17 @@ customElements.define('w-input', class extends ComponentBase
         }
     }
 
-    set value (_)
+    /**
+     * @param { string | number } data 
+     */
+    set value (data)
     {
-        this.ref.input.value = _.toString()
+        this.ref.input.value = data.toString()
     }
 
+    /**
+     * @returns { string | number }
+     */
     get value ()
     {
         return this.ref.input.value

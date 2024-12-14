@@ -3,12 +3,7 @@ export class ComponentBase extends HTMLElement
     constructor(html, css)
     {
         super()
-
-        // Get remixicon reference
-        const remixicon = this.ownerDocument.head.querySelector('link[href*="remixicon.css"]') ||
-                          this.ownerDocument.head.querySelector('link[href*="remixicon.min.css"]')
         
-        // Register global CSS
         if (!this.ownerDocument.qsInitGlobalCSS)
         {
             const cssEl = document.createElement('style')
@@ -16,6 +11,7 @@ export class ComponentBase extends HTMLElement
             cssEl.setAttribute('type', 'text/css')
 
             cssEl.textContent = /*css*/`
+                @import url('https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css');
                 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&display=swap');
 
                 :root {
@@ -49,7 +45,7 @@ export class ComponentBase extends HTMLElement
         this.attachShadow({ mode: 'open' }).innerHTML = /*html*/`
             ${html}
             <style type="text/css">
-                @import url('${remixicon.href}');
+                @import url('https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css');
 
                 :host {
                     display: initial;
