@@ -6,7 +6,7 @@ customElements.define('w-button', class extends ComponentBase
     {
         super(
             /*html*/`
-                <button root>
+                <button ref="root">
                     <slot></slot>
                 </button>
             `,
@@ -14,7 +14,11 @@ customElements.define('w-button', class extends ComponentBase
                 :host {
                     border-radius: .375rem;
                 }
-                [root] {
+                :host([disabled]) [ref="root"] {
+                    opacity: .75;
+                    pointer-events: none;
+                }
+                [ref="root"] {
                     height: 2.35rem;
                     padding-left: .875rem;
                     padding-right: .875rem;
@@ -26,14 +30,26 @@ customElements.define('w-button', class extends ComponentBase
                     border: 0;
                     outline: none;
                     font-size: .875rem;
-                    line-height: 1.25rem;
-                    cursor: pointer;
                     font-weight: 500;
+                    cursor: pointer;
                 }
-                [root]:active {
+                [ref="root"]:active {
                     transform: scale(.95);
                 }
             `
         )
+
+        this.ref.root.addEventListener('click', this.#onClick.bind(this))
+    }
+
+    #onClick(ev)
+    {
+        if (this.getAttribute('type') === 'submit')
+        {
+            this.dispatchEvent(new CustomEvent('asyncsubmit', {
+                composed: true,
+                bubbles: true
+            }))
+        }
     }
 })

@@ -53,12 +53,15 @@ export class ComponentBase extends HTMLElement
                 :host([block]) {
                     display: block;
                 }
-                [root] {
+                [root],
+                [ref="root"] {
                     font-family: var(--qs-font-family, 'sans-serif');
                     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
                     box-sizing: border-box;
+                    line-height: 1.25;
                 }
-                [root] * {
+                [root] *,
+                [ref="root"] * {
                     box-sizing: inherit;
                 }
                 ${css}

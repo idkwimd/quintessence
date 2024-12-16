@@ -29,6 +29,9 @@ customElements.define('w-better-select-option', class extends ComponentBase
      */
     #selectedItem
 
+    /**
+     * 
+     */
     constructor()
     {
         super(
@@ -52,6 +55,9 @@ customElements.define('w-better-select-option', class extends ComponentBase
                 :host([active]) {
                     display: block;
                 }
+                :host([search]) .search-box {
+                    display: flex;
+                }
                 [ref="root"] {
                     border-radius: .5rem;
                     background: rgb(var(--qs-color-base-l2));
@@ -59,9 +65,10 @@ customElements.define('w-better-select-option', class extends ComponentBase
                     font-size: .875rem;
                     overflow-y: auto;
                     box-shadow: var(--qs-shadow-lg);
+                    user-select: none;
                 }
                 .search-box {
-                    display: flex;
+                    display: none;
                     align-items: center;
                     border-bottom: 1px solid rgb(var(--qs-color-base-border));
                 }
@@ -82,6 +89,9 @@ customElements.define('w-better-select-option', class extends ComponentBase
                     padding: .375rem .5rem;
                     border-radius: .25rem;
                     cursor: default;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
                 }
                 .options > .item:hover {
                     background: rgb(0 0 0 / .08);
@@ -91,6 +101,14 @@ customElements.define('w-better-select-option', class extends ComponentBase
                 }
                 .options > .item.selected {
                     color: rgb(var(--qs-color-primary));
+                }
+                .options > .item > .check {
+                    margin: 0;
+                    margin-right: .25rem;
+                    display: none;
+                }
+                .options > .item.selected > .check {
+                    display: inline;
                 }
             `
         )
@@ -161,7 +179,7 @@ customElements.define('w-better-select-option', class extends ComponentBase
             const el = this.ownerDocument.createElement('div')
                   el.dataset.value = opt.value
                   el.className = 'item'
-                  el.textContent = opt.text
+                  el.innerHTML = `<i class="ri-check-line check"></i>${opt.text}`
                   el.$option = opt
 
             this.ref.options.appendChild(el)
@@ -236,7 +254,7 @@ customElements.define('w-better-select', class extends ComponentBase
         super(
             /*html*/`
                 <w-input ref="input" root readonly placeholder="Select...">
-                    <i slot="after" class="caret ri-arrow-down-s-line ri-lg"></i>
+                    <i slot="after" class="caret ri-arrow-down-s-line"></i>
                 </w-input>
             `,
             /*css*/`
@@ -256,6 +274,11 @@ customElements.define('w-better-select', class extends ComponentBase
         if (this.hasAttribute('multiselect'))
         {
             this.#dropdown.setAttribute('multiselect', '')
+        }
+
+        if (this.hasAttribute('search'))
+        {
+            this.#dropdown.setAttribute('search', '')
         }
 
         this.#dropdown.addEventListener('change', this.#onSelect.bind(this))
@@ -280,6 +303,10 @@ customElements.define('w-better-select', class extends ComponentBase
             : ev.detail.value
 
         this.#internals.setFormValue(this.#value)
+
+        this.dispatchEvent(new CustomEvent('select', {
+            detail: this.#value
+        }))
     }
 
     #onInputClick (ev)

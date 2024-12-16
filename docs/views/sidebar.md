@@ -5,3 +5,4 @@
   * [Button](/components/button)
   * [Input](/components/input)
 - [Dashboard](/components/dashboard)
+- [Better Select](/components/better-select)

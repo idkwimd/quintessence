@@ -16,15 +16,15 @@
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias sint pariatur cum ea fugiat repellendus laborum, culpa soluta. Tempore nesciunt consequatur nostrum dicta saepe nulla deleniti fuga, aspernatur sapiente, debitis vel corporis quasi explicabo, a iste repellat officia autem rerum vitae dolor eum? Soluta aliquam sapiente harum, qui, consequatur inventore quos aspernatur quaerat ipsum sed iste doloribus corporis porro nihil ipsa possimus numquam sunt nemo temporibus praesentium dolorum dicta quae alias eligendi. Assumenda dolore hic, esse accusantium voluptate quisquam deleniti id quae ipsa praesentium necessitatibus ea facilis minus aliquid optio illo sapiente, voluptatibus vel voluptatem, est ex. Soluta maiores provident nisi ut quibusdam quas facere quidem, in ratione asperiores! Similique voluptatem placeat, dolorem, cumque eaque dolore quos quis, laboriosam modi ratione rerum deleniti corporis accusamus incidunt maxime est aut corrupti obcaecati? Illum corrupti fuga saepe accusamus adipisci eligendi, consectetur atque! Illo, natus recusandae culpa nesciunt asperiores totam placeat velit ratione sed perferendis esse. Nihil expedita, distinctio quas, placeat quam pariatur reiciendis laboriosam molestias dolorum incidunt nam facere sit ut! Fugiat velit harum dolore quisquam sapiente perferendis dolor ab nobis ea enim doloremque, deleniti voluptatum est veritatis in rem, ullam molestiae eius tempore voluptate! Cumque sint maxime quasi doloribus corporis aut?
             <br />
             <br />
-            <form id="frm">
+            <w-form action="hi/7">
                 <w-input block type="datetime-local" placeholder="Wait..." name="dunn">
                     <i class="ri-cloud-line ri-lg" slot="before"></i>
                 </w-input>
                 <br />
-                <w-better-select multiselect block id="sel2" name="ju2222" placeholder="Select a value"></w-better-select>
+                <w-better-select multiselect search block id="sel2" name="ju2222" placeholder="Select a value"></w-better-select>
                 <br/>
-                <w-button>Submit</w-button>
-            </form>
+                <w-button type="submit">Submit</w-button>
+            </w-form>
         </w-box>
     </w-dashboard>
 
@@ -55,12 +55,6 @@
             { text: 'Bangladesh', value: 'bd' },
             { text: 'Germany', value: 'ge' }
         ]
-
-        frm.addEventListener('submit', (ev) => {
-            ev.preventDefault()
-            const frmData = new FormData(frm)
-            console.log(Object.fromEntries(frmData.entries()))
-        })
     </script>
 </body>
 </html>
