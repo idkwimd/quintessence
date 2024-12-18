@@ -13,7 +13,7 @@ customElements.define('w-input', class extends ComponentBase
             /*html*/`
                 <div root>
                     <slot name="before" display="inline-flex"></slot>
-                    <input class="orig-input" ref="input" />
+                    <input class="orig-input" ref="input" part="input" />
                     <slot name="after" display="inline-flex"></slot>
                 </div>
             `,

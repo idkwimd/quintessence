@@ -240,6 +240,11 @@ customElements.define('w-better-select', class extends ComponentBase
     #docClickCb
 
     /**
+     * @type { Function }
+     */
+    #windowScrollCb
+
+    /**
      * @type { IValue }
      */
     #value
@@ -254,12 +259,13 @@ customElements.define('w-better-select', class extends ComponentBase
         super(
             /*html*/`
                 <w-input ref="input" root readonly placeholder="Select...">
-                    <i slot="after" class="caret ri-arrow-down-s-line"></i>
+                    <i slot="after" class="caret ri-arrow-down-s-line ri-lg"></i>
                 </w-input>
             `,
             /*css*/`
                 .caret {
                     margin-top: 1px;
+                    margin-right: -.25rem;
                 }
             `
         )
@@ -285,7 +291,9 @@ customElements.define('w-better-select', class extends ComponentBase
         this.ownerDocument.body.appendChild(this.#dropdown)
         this.ref.input.addEventListener('click', this.#onInputClick.bind(this))
         this.#docClickCb = this.#hideDropdown.bind(this)
+        this.#windowScrollCb = this.#hideDropdown.bind(this)
         this.ownerDocument.addEventListener('click', this.#docClickCb)
+        window.addEventListener('scroll', this.#windowScrollCb)
     }
 
     /**
@@ -340,6 +348,7 @@ customElements.define('w-better-select', class extends ComponentBase
     #hideDropdown ()
     {
         this.#dropdown.removeAttribute('active')
+        this.ref.searchInput.blur()
     }
 
     /**
@@ -359,6 +368,7 @@ customElements.define('w-better-select', class extends ComponentBase
     {
         this.#dropdown.remove()
         this.ownerDocument.removeEventListener('click', this.#docClickCb)
+        window.removeEventListener('scroll', this.#windowScrollCb)
     }
 
     // attributeChangedCallback(name, ov, nv)

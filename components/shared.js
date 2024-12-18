@@ -37,7 +37,7 @@ export class ComponentBase extends HTMLElement
                     box-shadow: var(--qs-shadow-lg);
                 }
             `
-
+            
             this.ownerDocument.head.appendChild(cssEl)
             this.ownerDocument.qsInitGlobalCSS = true
         }
